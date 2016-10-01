@@ -1,9 +1,17 @@
 package com.wrk.fragment02;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +23,7 @@ public class MainActivity extends Activity {
 
     private View mView1, mView2, mView3;
     private ViewPager mViewPager;
+    private PagerTabStrip pagertab;
 
     // view的集合
     private List<View> mViews;
@@ -28,6 +37,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        pagertab = (PagerTabStrip) findViewById(R.id.pagertab);
+
+        // 更改下划线的样式
+        pagertab.setTabIndicatorColorResource(R.color.colorAccent);
 
         LayoutInflater inflater = getLayoutInflater();
         mView1 = inflater.inflate(R.layout.layout01, null);
@@ -80,9 +93,23 @@ public class MainActivity extends Activity {
             container.removeView(mViews.get(position));
         }
 
+//        在Tab标题前加了一个图片；
         @Override
         public CharSequence getPageTitle(int position) {
-            return mTitles.get(position);
+            // SpannableStringBuilder+ImageSpan实现图文结合
+            SpannableStringBuilder ssb = new SpannableStringBuilder(" " + mTitles.get(position));
+
+            Drawable mDrawable = getResources().getDrawable(R.mipmap.ic_launcher);
+            mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+
+            ImageSpan imageSpan = new ImageSpan(mDrawable, ImageSpan.ALIGN_BASELINE);
+
+            ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
+            ssb.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);// 设置图标
+            ssb.setSpan(foregroundColorSpan,1,ssb.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new RelativeSizeSpan(1.2f),1,ssb.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            return ssb;
         }
     }
 
