@@ -38,29 +38,13 @@ public class MainActivity extends FragmentActivity {
 
         mViewPager.setAdapter(mAdapter);
 
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        mIndicator.setViewPager(mViewPager, 0);
 
-                // tabWidth*positionOffset + position*tabWidth
-                mIndicator.scroll(position, positionOffset);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     private void initDatas() {
 
-        mTitles = Arrays.asList("短信1", "收藏2", "推荐3","短信4", "收藏5", "推荐6","短信7", "收藏8", "推荐9");
+        mTitles = Arrays.asList("短信1", "收藏2", "推荐3", "短信4", "收藏5", "推荐6", "短信7", "收藏8", "推荐9");
         mContents = new ArrayList<Fragment>();
 
         for (String title : mTitles) {

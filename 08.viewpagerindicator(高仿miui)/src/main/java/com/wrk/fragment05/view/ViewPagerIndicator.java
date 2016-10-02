@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -200,6 +201,7 @@ public class ViewPagerIndicator extends LinearLayout {
 
     /**
      * 设置可见的tab数量
+     *
      * @param count
      */
     public void setVisibleTabCount(int count) {
@@ -225,6 +227,61 @@ public class ViewPagerIndicator extends LinearLayout {
         tv.setLayoutParams(lp);
         return tv;
     }
+
+    private ViewPager mViewPager;
+
+
+    public interface PageOnchangeListener {
+        void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+
+        void onPageSelected(int position);
+
+        void onPageScrollStateChanged(int state);
+    }
+
+    public PageOnchangeListener mListener;
+
+
+    public void setOnPageChangeListener(PageOnchangeListener listener) {
+        this.mListener = listener;
+    }
+
+    /**
+     * 设置关联的ViewPager
+     *
+     * @param viewPager
+     * @param pos
+     */
+    public void setViewPager(ViewPager viewPager, int pos) {
+        mViewPager = viewPager;
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                // tabWidth*positionOffset + position*tabWidth
+                scroll(position, positionOffset);
+                if (mListener != null) {
+                    mListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (mListener != null) {
+                    mListener.onPageSelected(position);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (mListener != null) {
+                    mListener.onPageScrollStateChanged(state);
+                }
+            }
+        });
+        mViewPager.setCurrentItem(pos);
+    }
+
 
 }
 
