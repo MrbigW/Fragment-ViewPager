@@ -10,11 +10,17 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.wrk.fragment05.R;
+
+import java.util.List;
 
 /**
  * Created by MrbigW on 2016/10/2.
@@ -41,9 +47,15 @@ public class ViewPagerIndicator extends LinearLayout {
 
     private int mTranslationX = 0;
 
+    // 可见tab的数量
     private int mTabVisibleCount;
 
+    // 默认可见tab的数量
     private static final int COUNT_DEFAULT_TAB = 4;
+    // 默认文字颜色
+    private static final int COLOR_TEXT_NORMAL = 0xaaFFFFFF;
+
+    private List<String> mTitles;
 
 
     public ViewPagerIndicator(Context context) {
@@ -162,17 +174,58 @@ public class ViewPagerIndicator extends LinearLayout {
         // 容器移动，当tab处于移动至最后一个时
         if (position >= mTabVisibleCount - 2 && positionOffset > 0 && getChildCount() > mTabVisibleCount) {
 
-            if(mTabVisibleCount!= 1) {
+            if (mTabVisibleCount != 1) {
                 this.scrollTo((int) ((position - (mTabVisibleCount - 2)) * tabWidth + tabWidth * positionOffset), 0);
-            }else {
-                this.scrollTo((int) (position * tabWidth + tabWidth*positionOffset),0);
+            } else {
+                this.scrollTo((int) (position * tabWidth + tabWidth * positionOffset), 0);
             }
+        }
+        invalidate();
+    }
 
+    public void setTabItemTitles(List<String> titles) {
+
+        if (titles != null && titles.size() > 0) {
+            this.removeAllViews();
+            mTitles = titles;
+
+            for (String title : mTitles) {
+                addView(generateTextView(title));
+            }
 
         }
 
-        invalidate();
     }
+
+
+    /**
+     * 设置可见的tab数量
+     * @param count
+     */
+    public void setVisibleTabCount(int count) {
+        mTabVisibleCount = count;
+    }
+
+    /**
+     * 根据title创建Tab
+     *
+     * @param title
+     * @return
+     */
+    private View generateTextView(String title) {
+
+        TextView tv = new TextView(getContext());
+
+        LinearLayout.LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        lp.width = getScreenWidth() / mTabVisibleCount;
+        tv.setText(title);
+        tv.setGravity(Gravity.CENTER);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        tv.setTextColor(COLOR_TEXT_NORMAL);
+        tv.setLayoutParams(lp);
+        return tv;
+    }
+
 }
 
 
