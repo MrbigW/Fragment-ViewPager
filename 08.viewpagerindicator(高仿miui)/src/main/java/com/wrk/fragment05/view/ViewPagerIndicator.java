@@ -55,6 +55,10 @@ public class ViewPagerIndicator extends LinearLayout {
     private static final int COUNT_DEFAULT_TAB = 4;
     // 默认文字颜色
     private static final int COLOR_TEXT_NORMAL = 0xaaFFFFFF;
+    private static final int COLOR_TEXT_HIGHLIGHT = 0xFFFFFFFF;
+
+    // 三角形最大底边长
+    private final int DIMENSION_TRAIANGLE_WIDTH_MAX = (int) (getScreenWidth() / 3 * RADIO_TRIANGLE_WIDTH);
 
     private List<String> mTitles;
 
@@ -106,7 +110,7 @@ public class ViewPagerIndicator extends LinearLayout {
             lp.width = getScreenWidth() / mTabVisibleCount;
             view.setLayoutParams(lp);
         }
-
+        setItemClickEvent();
     }
 
     private int getScreenWidth() {
@@ -139,6 +143,8 @@ public class ViewPagerIndicator extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
 
         mTriangleWidth = (int) (w / mTabVisibleCount * RADIO_TRIANGLE_WIDTH);
+
+        mTriangleWidth = Math.min(mTriangleWidth, DIMENSION_TRAIANGLE_WIDTH_MAX);
 
         mInitTranslationX = w / mTabVisibleCount / 2 - mTriangleWidth / 2;
 
@@ -193,7 +199,7 @@ public class ViewPagerIndicator extends LinearLayout {
             for (String title : mTitles) {
                 addView(generateTextView(title));
             }
-
+            setItemClickEvent();
         }
 
     }
@@ -252,7 +258,7 @@ public class ViewPagerIndicator extends LinearLayout {
      * @param viewPager
      * @param pos
      */
-    public void setViewPager(ViewPager viewPager, int pos) {
+    public void setViewPager(ViewPager viewPager, final int pos) {
         mViewPager = viewPager;
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -270,6 +276,7 @@ public class ViewPagerIndicator extends LinearLayout {
                 if (mListener != null) {
                     mListener.onPageSelected(position);
                 }
+                highLightTextView(position);
             }
 
             @Override
@@ -280,8 +287,53 @@ public class ViewPagerIndicator extends LinearLayout {
             }
         });
         mViewPager.setCurrentItem(pos);
+        highLightTextView(pos);
     }
 
+    /**
+     * 重置tab文本颜色
+     */
+    public void resetTextViewColor() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(COLOR_TEXT_NORMAL);
+            }
+        }
+    }
+
+    /**
+     * 设置文本颜色的高亮
+     *
+     * @param pos
+     */
+    private void highLightTextView(int pos) {
+        resetTextViewColor();
+        View view = getChildAt(pos);
+
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(COLOR_TEXT_HIGHLIGHT);
+        }
+
+    }
+
+    /**
+     * 设置tab的点击事件
+     */
+    private void setItemClickEvent() {
+        int cCount = getChildCount();
+        for (int i = 0; i < cCount; i++) {
+            final int j = i;
+            View view = getChildAt(i);
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewPager.setCurrentItem(j);
+                }
+            });
+        }
+    }
 
 }
 

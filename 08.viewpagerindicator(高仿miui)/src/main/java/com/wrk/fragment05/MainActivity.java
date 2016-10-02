@@ -33,7 +33,7 @@ public class MainActivity extends FragmentActivity {
 
         initDatas();
 
-        mIndicator.setVisibleTabCount(3);
+        mIndicator.setVisibleTabCount(4);
         mIndicator.setTabItemTitles(mTitles);
 
         mViewPager.setAdapter(mAdapter);
